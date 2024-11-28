@@ -1,13 +1,4 @@
 
-const Course=({course})=>{
-  return(
-    <div>
-      <h1>{course.name}</h1>
-      {course.parts.map(value => <p key={value.id}>{value.name} {value.exercises}</p>)}
-    </div>
-  )
-}
-
 const App = () => {
   const course = {
     id: 1,
@@ -32,6 +23,24 @@ const App = () => {
   }
 
   return <Course course={course} />
+}
+
+
+const Course=({course})=>{
+  return(
+    <div>
+      <h1>{course.name}</h1>
+      {course.parts.map(value => <p key={value.id}>{value.name} {value.exercises}</p>)}
+      <Total course={course}/>
+    </div>
+  )
+}
+
+const Total=({course})=>{
+  const total=course.parts.reduce((sum,value)=>sum+value.exercises,0)
+  return(
+    <p><b>Total of {total} exercises</b></p>
+  )
 }
 
 export default App;

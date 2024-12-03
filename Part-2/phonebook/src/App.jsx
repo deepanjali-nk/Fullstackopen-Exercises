@@ -8,8 +8,14 @@ const App = () => {
   const [newName, setNewName] = useState('');
 
   const handleName = (event) => {
-    event.preventDefault()
-    setPersons(persons.concat({ name: newName }))
+    event.preventDefault();
+    const  nameExists = persons.find(person => person.name === newName)
+    if (nameExists) {
+      alert(`${newName} is already added to phonebook`);
+    }
+    else{
+      setPersons(persons.concat({ name: newName }))
+    }
     setNewName('')
   }
 

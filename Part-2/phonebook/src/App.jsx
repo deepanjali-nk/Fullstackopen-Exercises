@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './Filter'
 import Person from './Person' 
 import axios from 'axios'
+import noteUpdate from './services/notes'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -10,10 +11,10 @@ const App = () => {
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    let myAxios=axios.get('http://localhost:3001/persons')
+    let myAxios= noteUpdate.getAll();
     myAxios.then(response => {
-      console.dir(response.data);
-      setPersons(response.data);
+      console.dir(response);
+      setPersons(response);
     })
   }, [])
   const handleSubmit = (event) => {
@@ -25,8 +26,17 @@ const App = () => {
     else{
       setPersons(persons.concat({ name: newName, number: newNumber }))
     }
-    setNewName('');
-    setNewNumber('');
+    let newNote=  {
+      name: newName,
+      number: newNumber
+    }
+    let myPromise= noteUpdate.create(newNote);
+    myPromise.then(response => {
+      console.dir(response);
+      setPersons(persons.concat(response));
+      setNewName('');
+      setNewNumber('');
+    })
 
   }
 

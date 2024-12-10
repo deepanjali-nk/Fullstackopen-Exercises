@@ -20,13 +20,39 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const  nameExists = persons.find(person => person.name === newName)
-    if (nameExists) {
-      alert(`${newName} is already added to phonebook`);
+    // const  nameExists = persons.find(person => person.name === newName)
+    // if (nameExists) {
+    //   alert(`${newName} is already added to phonebook`);
+    // }
+    // else{
+    //   setPersons(persons.concat({ name: newName, number: newNumber }))
+    // }
+
+    let nameExists = persons.find(person => person.name === newName);
+    if(nameExists){
+      const confirmUpdate = window.confirm(
+        `${newName} is already in the phonebook, replace the old number with the new one?`
+      );
+      if(confirmUpdate){
+        const updatedPerson={ ...nameExists, number: newNumber};
+        noteUpdate
+          .update(nameExists.id, updatedPerson)
+          .then(response => {
+            setPersons(
+              persons.map(person =>
+                person.id !== nameExists.id ? person : response
+              )
+            );
+          });
+      }
+      else{
+        const newPerson = { name: newName, number: newNumber };
+         personService.create(newPerson).then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
+         });
+      }
     }
-    else{
-      setPersons(persons.concat({ name: newName, number: newNumber }))
-    }
+
     let newNote=  {
       name: newName,
       number: newNumber

@@ -17,6 +17,7 @@ const App = () => {
       setPersons(response);
     })
   }, [])
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const  nameExists = persons.find(person => person.name === newName)
@@ -38,6 +39,17 @@ const App = () => {
       setNewNumber('');
     })
 
+  }
+
+  const handleDelete = (id, name) => {
+    const result= window.confirm(`Delete ${name} ?`);
+    if(result){
+      let myPromise= noteUpdate.deletePerson(id);
+      myPromise.then(response => {
+        console.dir(response);
+        setPersons(persons.filter(person => person.id !== id));
+      })
+    }
   }
 
   const handleChange = (event) => {
@@ -71,7 +83,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <div>
-        <Person personsToShow={filteredPersons} />
+        <Person personsToShow={filteredPersons} deleteData={handleDelete}  />
       </div>
     </div>
   )

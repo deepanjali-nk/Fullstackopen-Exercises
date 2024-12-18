@@ -3,12 +3,14 @@ import Filter from './Filter'
 import Person from './Person' 
 import axios from 'axios'
 import noteUpdate from './services/notes'
+import Notification from './Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     let myAxios= noteUpdate.getAll();
@@ -20,52 +22,46 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // const  nameExists = persons.find(person => person.name === newName)
-    // if (nameExists) {
-    //   alert(`${newName} is already added to phonebook`);
-    // }
-    // else{
-    //   setPersons(persons.concat({ name: newName, number: newNumber }))
-    // }
-
+  
     let nameExists = persons.find(person => person.name === newName);
-    if(nameExists){
+  
+    if (nameExists) {
       const confirmUpdate = window.confirm(
         `${newName} is already in the phonebook, replace the old number with the new one?`
       );
-      if(confirmUpdate){
-        const updatedPerson={ ...nameExists, number: newNumber};
+  
+      if (confirmUpdate) {
+        const updatedPerson = { ...nameExists, number: newNumber };
         noteUpdate
           .update(nameExists.id, updatedPerson)
           .then(response => {
-            setPersons(
-              persons.map(person =>
-                person.id !== nameExists.id ? person : response
-              )
-            );
+            setPersons(persons.map(person => (person.id !== nameExists.id ? person : response)));
+            setNotification(`Updated ${newName}`);
+            setTimeout(() => setNotification(''), 5000);
+          })
+          .catch(() => {
+            setNotification(`Error: Could not update ${newName}`);
+            setTimeout(() => setNotification(''), 5000);
           });
       }
-      else{
-        const newPerson = { name: newName, number: newNumber };
-         personService.create(newPerson).then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson));
-         });
-      }
+    } else {
+      const newPerson = { name: newName, number: newNumber };
+      noteUpdate
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName('');
+          setNewNumber('');
+          setNotification(`Added ${newName}`);
+          setTimeout(() => setNotification(''), 5000);
+        })
+        .catch(() => {
+          setNotification(`Error: Could not add ${newName}`);
+          setTimeout(() => setNotification(''), 5000);
+        });
     }
-
-    let newNote=  {
-      name: newName,
-      number: newNumber
-    }
-    let myPromise= noteUpdate.create(newNote);
-    myPromise.then(response => {
-      console.dir(response);
-      setPersons(persons.concat(response));
-      setNewName('');
-      setNewNumber('');
-    })
-
-  }
+  };
+  
 
   const handleDelete = (id, name) => {
     const result= window.confirm(`Delete ${name} ?`);
@@ -93,6 +89,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+         <Notification message={notification} />
+      </div>
       <div>
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       </div>

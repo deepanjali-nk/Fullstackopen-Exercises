@@ -39,9 +39,14 @@ const App = () => {
             setNotification(`Updated ${newName}`);
             setTimeout(() => setNotification(''), 5000);
           })
-          .catch(() => {
-            setNotification(`Error: Could not update ${newName}`);
-            setTimeout(() => setNotification(''), 5000);
+          .catch((error) => {
+            if(error.response.status ===404){
+              setNotification(
+                `Information of ${newName} has already been removed from the server`
+              );
+              setTimeout(() => setNotification(''), 5000);
+              setPersons(persons.filter(person => person.id !== nameExists.id));
+            }
           });
       }
     } else {

@@ -55,6 +55,21 @@ app.delete('/api/persons/:id',(request,response)=>{
   response.status(204).send('okay');
 })
 
+app.post('/api/persons',(request,response)=>{
+  const newNote= request.body;
+  console.log(newNote)
+  newNote.id= Math.floor(Math.random() *1000000);
+  const name= newNote.name;
+  const number= newNote.number;
+  if (!name || !number) {
+    return response.status(400).json({ error: 'content missing' });
+  }
+  else if (notes.find(note => note.name === name)) {
+    return response.status(400).json({ error: 'name must be unique' });
+  }
+  notes.push(newNote)
+  response.status(201).json(newNote);
+})
 
 const PORT = 3001;
 app.listen(PORT, () => {

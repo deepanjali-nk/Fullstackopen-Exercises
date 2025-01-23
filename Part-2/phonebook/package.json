@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:ui": "rm -rf build && rm -rf ../../Part-3/phonebook_server/dist && npm run build && cp -r dist ../../part3/notes-server"
   },
   "dependencies": {
     "axios": "^1.7.9",

@@ -22,7 +22,7 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+   
     let nameExists = persons.find(person => person.name === newName);
   
     if (nameExists) {

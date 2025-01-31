@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
   const [notification, setNotification] = useState('');
+  console.log('Persons:', persons);
 
   useEffect(() => {
     let myAxios= noteUpdate.getAll();
@@ -69,9 +70,12 @@ const App = () => {
   
 
   const handleDelete = (id, name) => {
+    console.log("hell0")
+    console.log('Deleting', id, name);
     const result= window.confirm(`Delete ${name} ?`);
     if(result){
       let myPromise= noteUpdate.deletePerson(id);
+      console.log('My Promise:', myPromise);
       myPromise.then(response => {
         console.dir(response);
         setPersons(persons.filter(person => person.id !== id));
@@ -90,6 +94,7 @@ const App = () => {
   }
 
   const filteredPersons= persons.filter(person=> person.name.toLowerCase().includes(filter.toLowerCase()));
+  console.log('Filtered Persons:', filteredPersons);
   
   return (
     <div>

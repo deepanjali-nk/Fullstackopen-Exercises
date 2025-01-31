@@ -17,9 +17,25 @@ mongoose.connect(url)
   });
 
 const phonebookSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  number: { type: String, required: true }
-});
+    name: { 
+      type: String, 
+      required: [true, 'Name is required'], 
+      minlength: [3, 'Name must be at least 3 characters long'],
+      trim: true
+    },
+    number: { 
+      type: String, 
+      minlength: [8, 'Number must be at least 8 characters long'],
+      validate: {
+        validator: function(v) {
+          return /^\d{2,3}-\d+$/.test(v);
+        },
+        message: props => `${props.value} is not a valid phone number! Format must be XX-XXXXXX or XXX-XXXXXXX`
+      },
+      required: [true, 'Number is required']
+    }
+  });
+  
 
 phonebookSchema.set('toJSON', {
   transform: (document, returnedObject) => {

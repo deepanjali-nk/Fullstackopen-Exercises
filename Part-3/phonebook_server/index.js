@@ -52,6 +52,7 @@ app.delete('/api/persons/:id', async (req, res, next) => {
 
 app.post('/api/persons', async (req, res, next) => {
   const { name, number } = req.body;
+
   if (!name || !number) {
     return res.status(400).json({ error: 'Name and number are required' });
   }
@@ -69,9 +70,14 @@ app.post('/api/persons', async (req, res, next) => {
     const savedPerson = await person.save();
     res.status(201).json(savedPerson);
   } catch (error) {
+    // Handle validation errors specifically
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ error: error.message });
+    }
     next(error);
   }
 });
+
 app.put('/api/persons/:id', async (req, res, next) => {
   const { number } = req.body;
 
@@ -92,28 +98,17 @@ app.put('/api/persons/:id', async (req, res, next) => {
   }
 });
 
-// Global Error Handling Middleware
-app.use((error, req, res, next) => {
-  console.error(error.message);
-
-  if (error.name === 'CastError') {
-    return res.status(400).send({ error: 'Malformed ID' });
-  } else if (error.name === 'ValidationError') {
-    return res.status(400).json({ error: error.message });
-  }
-
-  res.status(500).send({ error: 'Internal server error' });
-});
 app.use((error, request, response, next) => {
   console.error(error.message);
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'Malformed ID' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
   }
 
   response.status(500).send({ error: 'Internal server error' });
 });
-
 
 const PORT = process.env.PORT? process.env.PORT: 3001;
 app.listen(PORT, () => {

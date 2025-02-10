@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import Filter from './Filter'
 import Person from './Person' 
-import axios from 'axios'
 import noteUpdate from './services/notes'
 import Notification from './Notification'
 

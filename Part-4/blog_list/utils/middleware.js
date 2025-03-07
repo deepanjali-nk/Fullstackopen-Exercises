@@ -17,10 +17,10 @@ const errorHandler = (error, request, response, next) => {
   };
 
   const tokenExtractor = (request, response, next) => {
-    console.log("Incoming Request Headers:", request.headers); // Debugging
+    // console.log("Incoming Request Headers:", request.headers); // Debugging
 
     const authorization = request.get("authorization");
-    console.log("Authorization Header:", authorization); // Debugging
+    // console.log("Authorization Header:", authorization); // Debugging
 
     if (authorization && authorization.startsWith("Bearer ")) {
         request.token = authorization.replace("Bearer ", "");

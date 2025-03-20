@@ -1,25 +1,61 @@
-const BlogForm = ({ onSubmit, title, author, url, handleChange }) => {
-    return (
-      <div>
-        <h2>Create a new blog</h2>
-        <form onSubmit={onSubmit}>
-          <div>
-            Title:
-            <input name="title" value={title} onChange={handleChange} />
-          </div>
-          <div>
-            Author:
-            <input name="author" value={author} onChange={handleChange} />
-          </div>
-          <div>
-            URL:
-            <input name="url" value={url} onChange={handleChange} />
-          </div>
-          <button type="submit">Save</button>
-        </form>
-      </div>
-    );
+import { useState } from 'react';
+
+const BlogForm = ({ createBlog }) => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    createBlog({
+      title,
+      author,
+      url
+    });
+
+    setTitle('');
+    setAuthor('');
+    setUrl('');
   };
-  
-  export default BlogForm;
-  
+
+  return (
+    <div>
+      <h2>Create a new blog</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          Title:
+          <input
+            type="text"
+            value={title}
+            onChange={({ target }) => setTitle(target.value)}
+            placeholder="Enter title"
+            required
+          />
+        </div>
+        <div>
+          Author:
+          <input
+            type="text"
+            value={author}
+            onChange={({ target }) => setAuthor(target.value)}
+            placeholder="Enter author"
+            required
+          />
+        </div>
+        <div>
+          URL:
+          <input
+            type="text"
+            value={url}
+            onChange={({ target }) => setUrl(target.value)}
+            placeholder="Enter blog URL"
+            required
+          />
+        </div>
+        <button type="submit">Create</button>
+      </form>
+    </div>
+  );
+};
+
+export default BlogForm;

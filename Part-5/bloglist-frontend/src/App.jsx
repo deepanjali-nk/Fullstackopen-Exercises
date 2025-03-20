@@ -13,7 +13,7 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [notification, setNotification] = useState(null);
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
+
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('user');
@@ -32,8 +32,9 @@ const App = () => {
   const fetchBlogs = async (token) => {
     try {
       const blogs = await blogService.getAll(token);
-      console.log('Fetched blogs:', blogs); // Debugging log to check the structure of blogs
-      setBlogs(blogs);
+      console.log('Fetched blogs:', blogs);
+      const sortedBlogs=blogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(sortedBlogs);
     } catch (error) {
       console.error('Error fetching blogs:', error);
     }
@@ -64,6 +65,26 @@ const App = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this blog?');
+    if(confirmDelete){
+      try{
+        await blogService.deleteBlog(id);
+        setBlogs(blogs.filter(blog => blog.id !== id));
+        setNotification('Blog deleted successfully');
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
+      }
+      catch(error){
+        console.error('Error deleting blog:', error);
+        setNotification('Error deleting blog');
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
+    }
+  }}
+
   const handleLogout = () => {
     setUser(null);
     setBlogs([]);
@@ -72,38 +93,56 @@ const App = () => {
     window.localStorage.removeItem('user');
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const addBlog = async (newBlog) => {
     try {
-      const blogObject = {
-        title: newBlog.title,
-        author: user.name,
-        url: newBlog.url,
+      const createdBlog = await blogService.create(newBlog);
+      const updatedBlog = {
+        ...createdBlog,
+        user: {
+          username: user.username,
+          name: user.name,
+        },
       };
-
-      const createdBlog = await blogService.create(blogObject);
-      console.log('Created Blog:', createdBlog); // Check the structure of the created blog
-
-      setBlogs([...blogs, createdBlog]);
-      setNotification(`Blog "${createdBlog.title}" added successfully!`);
-      setTimeout(() => setNotification(null), 5000);
-      setNewBlog({ title: '', author: '', url: '' });
+      setBlogs((prevBlogs) => [...prevBlogs, updatedBlog]);  // Add new blog immediately to the state
+      setNotification(`A new blog is added`);
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
     } catch (error) {
       console.error('Error creating blog:', error);
-      setNotification('Failed to create blog.');
-      setTimeout(() => setNotification(null), 5000);
+      setNotification('Error creating blog');
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
     }
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setNewBlog((prevBlog) => ({
-      ...prevBlog,
-      [name]: value,
-    }));
+  const updateLikes = async (id, updatedBlog) => {
+    try {
+      const response = await blogService.update(id, updatedBlog);
+      setBlogs((prevBlogs) =>
+        prevBlogs.map((blog) =>
+          blog.id === id ? { ...blog, likes: response.likes } : blog
+        )
+      );
+    } catch (error) {
+      console.error("Error updating likes:", error);
+      setNotification("Error updating likes");
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    }
   };
 
-  const userBlogs = blogs.filter((blog) => blog.user.username === user.username);
+  // const handleChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setNewBlog((prevBlog) => ({
+  //     ...prevBlog,
+  //     [name]: value,
+  //   }));
+  // };
+
+  const userBlogs = user ? blogs.filter((blog) => blog.user.username === user.username) : [];
 
   const loginForm = () => (
     <Togglable buttonLabel="login">
@@ -119,13 +158,7 @@ const App = () => {
 
   const blogForm = () => (
     <Togglable buttonLabel="create new blog">
-      <BlogForm
-        onSubmit={handleSubmit}
-        title={newBlog.title}
-        author={newBlog.author}
-        url={newBlog.url}
-        handleChange={handleChange}
-      />
+      <BlogForm createBlog={addBlog}/>
     </Togglable>
   );
 
@@ -140,11 +173,13 @@ const App = () => {
           <p>{user.name} logged-in</p> <button onClick={handleLogout}>logout</button>
           {blogForm()}
           <h2>Your Blogs</h2>
-          <p>{userBlogs.length} blog(s) found</p>
+          {/* <p>{userBlogs.length} blog(s) found</p> */}
+
+
           {userBlogs.length > 0 ? (
-            userBlogs.map((blog) => <Blog key={blog.id} blog={blog} />)
+            userBlogs.map((blog) => <Blog key={blog.id} blog={blog} updateLikes={updateLikes} handleDelete={handleDelete} />)
           ) : (
-            <p>You haven't created any blogs yet.</p>
+            <p>You have not created any blogs yet.</p>
           )}
         </div>
       )}

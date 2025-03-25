@@ -27,8 +27,6 @@ const errorHandler = (error, request, response, next) => {
     } else {
         request.token = null; // Ensure request.token is explicitly set
     }
-
-    console.log("Extracted Token:", request.token); // Debugging
     next();
 };
 

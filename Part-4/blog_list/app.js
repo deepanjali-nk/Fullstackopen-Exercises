@@ -15,6 +15,10 @@ app.use(middleware.tokenExtractor);
 
 app.use('/api/blogs',blogsController);
 
+if (process.env.NODE_ENV === 'test') {
+    const testingRouter = require('./controllers/Testing')
+    app.use('/api/testing', testingRouter)
+}
 
 
 module.exports = app;

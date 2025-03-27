@@ -36,7 +36,7 @@ const Blog = ({ blog ,updateLikes, handleDelete }) => {
           <p>Likes: {blog.likes} <button onClick={handleLikes} id='like'>Like</button></p>
           <p>Added by: {blog.user?.name || 'Unknown'}</p>
           {blog.user && blog.user.username === JSON.parse(localStorage.getItem('user')).username && (
-            <button onClick={() => handleDelete(blog.id)}>Delete</button>
+            <button onClick={() => handleDelete(blog.id)} id='delete'>Delete</button>
           )}
         </div>
       )}

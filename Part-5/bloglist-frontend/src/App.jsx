@@ -144,8 +144,9 @@ const App = () => {
   //   }));
   // };
 
-  const userBlogs = user ? blogs.filter((blog) => blog.user.username === user.username) : [];
+  // const userBlogs = user ? blogs.filter((blog) => blog.user.username === user.username) : [];
 
+  const userBlogs= blogs;
   const loginForm = () => (
     <Togglable buttonLabel="login">
       <LoginForm
@@ -172,7 +173,7 @@ const App = () => {
         loginForm()
       ) : (
         <div>
-          <p>{user.name} logged-in</p> <button onClick={handleLogout}>logout</button>
+          <p>{user.name} logged-in</p> <button onClick={handleLogout} id='logout'>logout</button>
           {blogForm()}
           <h2>Your Blogs</h2>
           {/* <p>{userBlogs.length} blog(s) found</p> */}

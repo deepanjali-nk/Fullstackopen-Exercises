@@ -27,13 +27,13 @@ const Blog = ({ blog ,updateLikes, handleDelete }) => {
     <div className='blog' style={blogStyle}>
       <div className='blog-summary'>
         Blog:{blog.title} by Author: {blog.author}
-        <button onClick={toggleVisibility}>{visible ? 'Hide' : 'View'}</button>
+        <button onClick={toggleVisibility} id='view'>{visible ? 'Hide' : 'View'}</button>
       </div>
 
       {visible && (
         <div className='blog-details'>
           <p>URL: {blog.url}</p>
-          <p>Likes: {blog.likes} <button onClick={handleLikes}>Like</button></p>
+          <p>Likes: {blog.likes} <button onClick={handleLikes} id='like'>Like</button></p>
           <p>Added by: {blog.user?.name || 'Unknown'}</p>
           {blog.user && blog.user.username === JSON.parse(localStorage.getItem('user')).username && (
             <button onClick={() => handleDelete(blog.id)}>Delete</button>

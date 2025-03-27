@@ -23,6 +23,7 @@ const App = () => {
         setUser(user);
         blogService.setToken(user.token);
         fetchBlogs(user.token);
+        console.log('User session restored:', user.token);
       } catch (error) {
         console.error('Error during user session handling:', error);
       }
@@ -120,6 +121,7 @@ const App = () => {
   const updateLikes = async (id, updatedBlog) => {
     try {
       const response = await blogService.update(id, updatedBlog);
+      console.log('response:', response);
       setBlogs((prevBlogs) =>
         prevBlogs.map((blog) =>
           blog.id === id ? { ...blog, likes: response.likes } : blog

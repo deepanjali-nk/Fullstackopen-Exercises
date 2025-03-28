@@ -25,6 +25,7 @@ describe("Blog app", function () {
       cy.get("#username").type("mluukkai");
       cy.get("#password").type("salainen");
       cy.get("#login").click();
+      cy.wait(500); 
       cy.contains("Matti Luukkainen logged-in");
     });
 
@@ -104,16 +105,52 @@ describe("Blog app", function () {
         cy.contains("logout").click();
   
         // Log in again as the first user (creator)
-        cy.contains("show login").click();
+        cy.contains("login").click();
         cy.get("#username").type("mluukkai");
         cy.get("#password").type("salainen");
         cy.get("#login").click();
   
-        // Check that the creator (first user) can see the delete button
         cy.contains("Blog Created by mluukkai");
         cy.contains("View").click();
         cy.get("#delete").should("exist");
       });
+
+      it("Blogs are ordered by likes", function () {
+        const blogs = [
+          { title: "Most Liked Blog", author: "Author A", url: "url1.com", likes: 10 },
+          { title: "Second Most Liked Blog", author: "Author B", url: "url2.com", likes: 5 },
+          { title: "Least Liked Blog", author: "Author C", url: "url3.com", likes: 1 },
+        ];
+      
+        blogs.forEach((blog) => {
+          cy.contains("create new blog").click();
+          cy.get("#title").type(blog.title);
+          cy.get("#author").type(blog.author);
+          cy.get("#url").type(blog.url);
+          cy.get("#create").click({force: true});
+          cy.get("#cancel").click({force: true});
+        });
+      
+        cy.contains("Most Liked Blog").parent().contains("View").click();
+        cy.get("#like").click().wait(500).click().wait(500).click().wait(500).click().wait(500).click().wait(500);
+        cy.get("#like").click().wait(500).click().wait(500).click().wait(500).click().wait(500).click().wait(500); // 10 likes
+      
+        cy.contains("Second Most Liked Blog").parent().contains("View").click();
+        cy.get("#like").click().wait(500).click().wait(500).click().wait(500).click().wait(500).click().wait(500); // 5 likes
+      
+        cy.contains("Least Liked Blog").parent().contains("View").click();
+        cy.get("#like").click().wait(500); 
+      
+        cy.reload();
+      
+        cy.get(".blog").eq(0).should("contain", "Most Liked Blog");
+        cy.get(".blog").eq(1).should("contain", "Second Most Liked Blog");
+        cy.get(".blog").eq(2).should("contain", "Least Liked Blog");
+      });
+      
+      
+        
+      });
+      
     });
   });
-});

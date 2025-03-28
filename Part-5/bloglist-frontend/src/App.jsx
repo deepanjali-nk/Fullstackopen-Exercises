@@ -104,7 +104,7 @@ const App = () => {
           name: user.name,
         },
       };
-      setBlogs((prevBlogs) => [...prevBlogs, updatedBlog]);  // Add new blog immediately to the state
+      setBlogs((prevBlogs) => [...prevBlogs, updatedBlog]);  
       setNotification(`A new blog is added`);
       setTimeout(() => {
         setNotification(null);

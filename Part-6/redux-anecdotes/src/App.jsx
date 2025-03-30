@@ -1,53 +1,39 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { getId } from './reducers/anecdoteReducer';
+import { voteAnecdote, createAnecdote } from './reducers/anecdoteReducer'
 
 const App = () => {
-  const anecdotes = useSelector(state =>{ 
-    return state.sort((a, b) => b.votes - a.votes)
-  }
+  const anecdotes = useSelector(state =>
+    [...state].sort((a, b) => b.votes - a.votes) 
   )
-  const dispatch = useDispatch();
-
+  const dispatch = useDispatch()
 
   const vote = (id) => {
-    dispatch({
-      type: 'VOTE',
-      data: { id }
-    })
+    dispatch(voteAnecdote(id))
   }
 
   const addAnecdote = (event) => {
-    event.preventDefault();
-    const content =event.target.anecdote.value;
-    event.target.anecdote.value = '';
-    dispatch({
-      type: 'NEW_ANECDOTE',
-      data: {
-        content,
-        id: getId(),
-        votes: 0
-      }
-    })
+    event.preventDefault()
+    const content = event.target.anecdote.value
+    event.target.anecdote.value = ''
+    dispatch(createAnecdote(content))
   }
 
   return (
     <div>
       <h2>Anecdotes</h2>
-      {anecdotes.map(anecdote =>
+      {anecdotes.map(anecdote => (
         <div key={anecdote.id}>
+          <div>{anecdote.content}</div>
           <div>
-            {anecdote.content}
-          </div>
-          <div>
-            has {anecdote.votes}
+            has {anecdote.votes} 
             <button onClick={() => vote(anecdote.id)}>vote</button>
           </div>
         </div>
-      )}
-      <h2>create new</h2>
+      ))}
+      <h2>Create new</h2>
       <form onSubmit={addAnecdote}>
-        <div><input name='anecdote' /></div>
-        <button type='submit'>create</button>
+        <div><input name="anecdote" /></div>
+        <button type="submit">create</button>
       </form>
     </div>
   )
